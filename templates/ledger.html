@@ -1,0 +1,4 @@
+{% extends "base.html" %}{% block body %}<div class="container py-3"><a href="/dashboard/">&larr; Dashboard</a><h4>Ledger</h4>
+<form class="row g-2 mb-3"><div class="col"><input type="date" name="from" class="form-control" value="{{ request.GET.from }}"></div><div class="col"><input type="date" name="to" class="form-control" value="{{ request.GET.to }}"></div><div class="col-auto"><button class="btn btn-primary">Filter</button></div></form>
+<div class="table-responsive"><table class="table table-sm bg-white"><tr><th>Date</th><th>Ref</th><th>Description</th><th>Debit</th><th>Credit</th><th>Balance</th></tr>
+{% for e,b in rows %}<tr><td>{{ e.date|date:"d M Y H:i" }}</td><td>{{ e.reference }}</td><td>{{ e.description }}</td><td>{{ e.debit }}</td><td>{{ e.credit }}</td><td>{{ b }}</td></tr>{% endfor %}</table></div></div>{% endblock %}

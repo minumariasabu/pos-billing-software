@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% block body %}
+<div class="mx-auto bg-white p-3 my-3" style="max-width:340px;font-family:monospace;font-size:13px">
+<div class="text-center"><b>{{ biz.name }}</b><br>{{ biz.address }}<br>{{ biz.phone }}<br>GSTIN: {{ biz.gstin }}</div><hr>
+Invoice: {{ sale.invoice_no }}<br>Date: {{ sale.created_at|date:"d M Y H:i" }}<br>Staff: {{ sale.staff.get_full_name|default:sale.staff.username }}
+{% if sale.customer %}<br>Customer: {{ sale.customer.name }}{% endif %}<hr>
+<table class="w-100">{% for i in sale.items.all %}<tr><td colspan="3">{{ i.name }}</td></tr><tr><td>{{ i.quantity }} x {{ i.unit_price }}</td><td>disc {{ i.discount }}</td><td class="text-end">{{ i.line_total }}</td></tr>{% endfor %}</table><hr>
+Subtotal: ₹{{ sale.subtotal }}<br>Discount: -₹{{ sale.discount }}<br>Tax: ₹{{ sale.tax }}<br><b>TOTAL: ₹{{ sale.total }}</b><br>
+Paid by {{ sale.payment.method|upper }} · Received ₹{{ sale.payment.received }} · Change ₹{{ sale.payment.change }}<hr><div class="text-center">Thank you! Visit again.</div></div>
+<div class="text-center mb-4 d-print-none"><button class="btn btn-primary" onclick="print()">Print Bill</button> <a class="btn btn-success" href="/billing/">New Sale</a></div>
+<style>@media print{body{background:#fff}}</style>{% endblock %}

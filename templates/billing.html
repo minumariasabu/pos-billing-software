@@ -1,0 +1,33 @@
+{% extends "base.html" %}{% block title %}Billing{% endblock %}{% block body %}
+<nav class="navbar bg-dark navbar-dark px-3"><span class="navbar-brand"><i class="bi bi-cash-register"></i> Billing Portal</span><a class="btn btn-sm btn-outline-light" href="/logout/">Logout</a></nav>
+<div class="container-fluid py-3"><div class="row g-3">
+<div class="col-lg-7"><input id="q" class="form-control mb-2" placeholder="Search name / SKU / category…" autofocus><div id="results" class="row g-2"></div></div>
+<div class="col-lg-5"><div class="card"><div class="card-header">Cart</div><div class="card-body">
+<div id="cart"></div><hr>
+<div class="d-flex justify-content-between"><span>Subtotal</span><span id="sub">0.00</span></div>
+{% if can_discount %}<div class="d-flex justify-content-between align-items-center"><span>Discount ₹</span><input id="disc" type="number" min="0" value="0" class="form-control form-control-sm w-25"></div>{% endif %}
+<div class="d-flex justify-content-between"><span>Tax</span><span id="tax">0.00</span></div>
+<div class="d-flex justify-content-between fw-bold fs-5"><span>Grand Total</span><span id="tot">0.00</span></div><hr>
+<select id="method" class="form-select mb-2"><option value="cash">Cash</option><option value="card">Card</option><option value="upi">UPI</option></select>
+<input id="recv" type="number" class="form-control mb-1" placeholder="Amount received (cash)">
+<div class="small mb-2">Change: <b id="chg">0.00</b></div><div id="err" class="text-danger small"></div>
+<button id="pay" class="btn btn-success w-100">Complete Payment</button></div></div></div></div></div>{% endblock %}
+{% block js %}<script>
+const csrf=document.cookie.split('; ').find(c=>c.startsWith('csrftoken='))?.split('=')[1]; let cart={}, total=0;
+const $=id=>document.getElementById(id), f=n=>(+n).toFixed(2);
+async function search(){const r=await (await fetch('/api/products/?search='+encodeURIComponent($('q').value))).json();
+ $('results').innerHTML=(r.results||r).map(p=>`<div class="col-6 col-md-4"><div class="card h-100"><div class="card-body p-2"><b>${p.name}</b><br><small>${p.category_name} · ${p.sku}</small><br>₹${p.selling_price} <span class="badge bg-${p.stock>0?'secondary':'danger'}">${p.stock} in stock</span><br>
+ <button class="btn btn-sm btn-primary mt-1" ${p.stock<1?'disabled':''} onclick='add(${JSON.stringify({id:p.id,name:p.name,price:+p.selling_price,tax:+p.tax_percent,stock:p.stock})})'>Add</button></div></div></div>`).join('')}
+function add(p){const c=cart[p.id]||(cart[p.id]={...p,qty:0}); if(c.qty<p.stock)c.qty++; else $('err').textContent='Not enough stock'; draw()}
+function qty(id,d){const c=cart[id]; c.qty+=d; if(c.qty<1)delete cart[id]; else if(c.qty>c.stock)c.qty=c.stock; draw()}
+function draw(){let sub=0,disc=+($('disc')?.value||0); const items=Object.values(cart); items.forEach(c=>sub+=c.price*c.qty);
+ let tax=0; items.forEach(c=>{const g=c.price*c.qty; tax+=(g-(sub?disc*g/sub:0))*c.tax/100}); total=sub-disc+tax;
+ $('cart').innerHTML=items.map(c=>`<div class="d-flex justify-content-between align-items-center mb-1"><span>${c.name}<br><small>₹${c.price}</small></span><span><button class="btn btn-sm btn-outline-secondary" onclick="qty(${c.id},-1)">−</button> ${c.qty} <button class="btn btn-sm btn-outline-secondary" onclick="qty(${c.id},1)">+</button></span><b>${f(c.price*c.qty)}</b></div>`).join('')||'<em>Cart is empty</em>';
+ $('sub').textContent=f(sub); $('tax').textContent=f(tax); $('tot').textContent=f(total); $('chg').textContent=f(Math.max(0,(+$('recv').value||0)-total))}
+$('q').oninput=search; $('recv').oninput=draw; $('disc')&&($('disc').oninput=draw);
+$('pay').onclick=async()=>{$('err').textContent='';
+ const r=await fetch('/api/checkout/',{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':csrf},body:JSON.stringify({
+  items:Object.values(cart).map(c=>({product_id:c.id,qty:c.qty})),method:$('method').value,discount:$('disc')?.value||0,received:$('recv').value})});
+ const d=await r.json(); if(r.ok) location=d.invoice_url; else $('err').textContent=d.error||JSON.stringify(d)};
+search(); draw();
+</script>{% endblock %}

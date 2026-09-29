@@ -1,0 +1,28 @@
+{% extends "base.html" %}{% block body %}
+<div class="d-flex"><nav class="sidebar d-none d-md-block"><h5 class="text-white p-3">Textile POS</h5>
+<a href="/dashboard/"><i class="bi bi-speedometer2"></i> Dashboard</a>
+<a href="/django-admin/catalog/product/"><i class="bi bi-box"></i> Products</a>
+<a href="/django-admin/catalog/category/"><i class="bi bi-tags"></i> Categories</a>
+<a href="/django-admin/catalog/stockmovement/"><i class="bi bi-boxes"></i> Inventory</a>
+<a href="/django-admin/auth/user/"><i class="bi bi-people"></i> Staff</a>
+<a href="/django-admin/catalog/supplier/"><i class="bi bi-truck"></i> Suppliers</a>
+<a href="/django-admin/catalog/customer/"><i class="bi bi-person-lines-fill"></i> Customers</a>
+<a href="/django-admin/billing/salereturn/"><i class="bi bi-arrow-return-left"></i> Returns</a>
+<a href="/django-admin/billing/sale/"><i class="bi bi-receipt"></i> Transactions</a>
+<a href="/ledger/"><i class="bi bi-journal-text"></i> Ledger</a>
+<a href="/api/reports/summary/"><i class="bi bi-graph-up"></i> Reports</a>
+<a href="/billing/"><i class="bi bi-cash-register"></i> Billing Portal</a>
+<a href="/mobile-admin/"><i class="bi bi-phone"></i> Mobile UI</a>
+<a href="/logout/"><i class="bi bi-box-arrow-right"></i> Logout</a></nav>
+<main class="flex-grow-1 p-4"><h3>Dashboard</h3><div class="row g-3 my-2">
+<div class="col-6 col-lg-3"><div class="card p-3"><small>Today's Sales</small><h4>₹{{ today_sales }}</h4></div></div>
+<div class="col-6 col-lg-3"><div class="card p-3"><small>Today's Transactions</small><h4>{{ today_tx }}</h4></div></div>
+<div class="col-6 col-lg-3"><div class="card p-3"><small>Total Revenue</small><h4>₹{{ revenue }}</h4></div></div>
+<div class="col-6 col-lg-3"><div class="card p-3"><small>Low Stock</small><h4>{{ low_stock|length }}</h4></div></div>
+<div class="col-4 col-lg-3"><div class="card p-3"><small>Products</small><h4>{{ products }}</h4></div></div>
+<div class="col-4 col-lg-3"><div class="card p-3"><small>Staff</small><h4>{{ staff }}</h4></div></div>
+<div class="col-4 col-lg-3"><div class="card p-3"><small>Suppliers</small><h4>{{ suppliers }}</h4></div></div>
+<div class="col-6 col-lg-3"><div class="card p-3"><small>Returns</small><h4>{{ returns_total }}</h4></div></div></div>
+<div class="card"><div class="card-header">Recent Transactions</div><div class="table-responsive"><table class="table mb-0">
+{% for s in recent_sales %}<tr><td><a href="/invoice/{{ s.id }}/">{{ s.invoice_no }}</a></td><td>{{ s.staff }}</td><td>{{ s.payment.method|upper }}</td><td>₹{{ s.total }}</td><td>{{ s.get_status_display }}</td></tr>{% endfor %}</table></div></div>
+</main></div>{% endblock %}
