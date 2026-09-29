@@ -5,7 +5,7 @@ A Point of Sale and billing system with an Admin Portal, a Billing Portal for st
 ## Live links
 - Live app: `<LIVE_URL>`
 - Mobile admin (full Admin Portal, phone layout): `<LIVE_URL>/mobile-admin/`
-- Source: `<GITHUB_URL>`
+- Source: `<https://github.com/minumariasabu/pos-billing-software.git>`
 
 ## Test credentials
 | Role  | Username | Password |
