@@ -13,14 +13,15 @@ MIDDLEWARE = ["django.middleware.security.SecurityMiddleware","django.contrib.se
 ROOT_URLCONF = "config.urls"
 TEMPLATES = [{"BACKEND":"django.template.backends.django.DjangoTemplates","DIRS":[BASE_DIR/"templates"],"APP_DIRS":True,
  "OPTIONS":{"context_processors":["django.template.context_processors.request","django.contrib.auth.context_processors.auth","django.contrib.messages.context_processors.messages"]}}]
-# PostgreSQL by default; set DB_ENGINE=sqlite for a quick local try-out.
+# SQLite by default; set DB_ENGINE=postgres (plus DB_NAME, DB_USER, DB_PASSWORD, DB_HOST) to use PostgreSQL.
 if os.getenv("DB_ENGINE", "sqlite") == "sqlite":
     DATABASES = {"default": {"ENGINE":"django.db.backends.sqlite3","NAME":BASE_DIR/"db.sqlite3"}}
 else:
     DATABASES = {"default": {"ENGINE":"django.db.backends.postgresql","NAME":os.getenv("DB_NAME","pos"),
       "USER":os.getenv("DB_USER","postgres"),"PASSWORD":os.getenv("DB_PASSWORD","postgres"),
       "HOST":os.getenv("DB_HOST","localhost"),"PORT":os.getenv("DB_PORT","5432")}}
-STATIC_URL = "static/"; MEDIA_URL = "media/"; MEDIA_ROOT = BASE_DIR/"media"
+STATIC_URL = "/static/"; STATIC_ROOT = BASE_DIR/"staticfiles"
+MEDIA_URL = "/media/"; MEDIA_ROOT = BASE_DIR/"media"
 LOGIN_URL = "/login/"; LOGIN_REDIRECT_URL = "/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 TIME_ZONE = "Asia/Kolkata"; USE_TZ = True

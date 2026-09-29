@@ -15,7 +15,7 @@ A Point of Sale and billing system with an Admin Portal, a Billing Portal for st
 
 ## Tech stack
 - **Backend:** Python, Django, Django REST Framework (token auth for the JSON API)
-- **Database:** PostgreSQL by default, with an SQLite option for a quick local try (`DB_ENGINE=sqlite`)
+- **Database:** SQLite by default (set DB_ENGINE=postgres, plus DB_NAME, DB_USER, DB_PASSWORD and DB_HOST, to use PostgreSQL)
 - **Frontend:** Django templates, Bootstrap 5, Bootstrap Icons, vanilla JavaScript for the billing screen
 - **Apps:** `accounts` (roles, permissions, business settings), `catalog` (products, categories, suppliers, customers, stock), `billing` (sales, payments, returns, ledger, reports)
 
@@ -51,24 +51,16 @@ A Point of Sale and billing system with an Admin Portal, a Billing Portal for st
 python -m venv venv
 venv\Scripts\activate          # Windows  (source venv/bin/activate on macOS/Linux)
 pip install -r requirements.txt
-```
-
-**Database.** Either use PostgreSQL:
-```bash
-createdb pos
-# set the environment variables: DB_NAME, DB_USER, DB_PASSWORD, DB_HOST
-```
-or, for a quick try, use SQLite by setting the environment variable `DB_ENGINE=sqlite`.
-(Windows PowerShell: `$env:DB_ENGINE="sqlite"`)
-
-**Create the tables and run:**
-```bash
 python manage.py makemigrations accounts catalog billing
 python manage.py migrate
 python manage.py createsuperuser     # the superuser becomes an Admin automatically
 python manage.py runserver
 ```
 Open http://127.0.0.1:8000/ and log in. Create staff accounts under **Staff** in the sidebar, where each person's role, discount limit and return permission are also set.
+
+**Database.** The project uses SQLite by default, so nothing else needs to be set up.
+To use PostgreSQL instead, create a database (`createdb pos`) and set these environment variables before running the commands above:
+`DB_ENGINE=postgres`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`.
 
 ## Main URLs
 | URL | Purpose |
